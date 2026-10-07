@@ -27,7 +27,13 @@ header{position:sticky;top:0;z-index:5;background:#ffffffed;backdrop-filter:blur
 <main class="wrap">
 <div class="stats"><div class="stat"><b id="owned">0</b><span>所持種類</span></div><div class="stat"><b id="total">0</b><span>登録カード</span></div><div class="stat"><b id="percent">0%</b><span>コンプ率</span></div></div>
 <div class="progress"><div id="bar" class="bar"></div></div>
-<div class="controls"><input id="search" placeholder="番号・名前・メモで検索"><select id="setFilter"><option value="">すべての弾</option></select><select id="rarityFilter"><option value="">レアリティ</option><option>N</option><option>R</option><option>SR</option><option>PR</option><option>ER</option><option>PARALLEL</option></select><select id="haveFilter"><option value="">すべて</option><option value="have">持っている</option><option value="missing">未所持</option></select></div>
+<div class="controls"><input id="search" placeholder="番号・名前・メモで検索"><select id="setFilter"><option value="">すべての弾</option></select><select id="rarityFilter"><option value="">レアリティ</option><option>N</option><option>R</option><option>SR</option><option>PR</option><option>ER</option><option>PARALLEL</option></select><select id="haveFilter"><option value="">すべて</option><option value="have">持っている</option><option value="missing">未所持</option></select><select id="categoryFilter">
+<option value="">すべてのタイプ</option>
+<option value="キュート">キュート</option>
+<option value="クール">クール</option>
+<option value="セクシー">セクシー</option>
+<option value="ポップ">ポップ</option>
+</select></div>
 <div class="actions"><button class="primary" onclick="addCard()">＋ カード追加</button><button onclick="backup()">バックアップ</button><button onclick="$('file').click()">復元</button><button onclick="resetOwned()">所持数リセット</button><input id="file" type="file" accept=".json" hidden><input id="photoFile" type="file" accept="image/*" hidden></div>
 <div class="hint">カードをタップして編集。2弾以降も「カード追加」から登録できます。データはこの端末に保存されます。</div>
 <section id="grid" class="grid"></section>
@@ -218,7 +224,7 @@ async function render(){
   const rf=$("rarityFilter").value;
 
   const hf=$("haveFilter").value;
-
+  const cf=$("categoryFilter").value;
   const bf=brandFilter.value;
 
   const sets=[...new Set(cards.map(c=>c.set).filter(Boolean))]
@@ -258,7 +264,7 @@ async function render(){
       &&(!bf||c.brand===bf)
 
       &&(!hf||(hf==="have"?c.owned>0:c.owned===0));
-
+      &&(!cf||c.category===cf);
   }).sort((a,b)=>
 
     String(a.id).localeCompare(String(b.id),undefined,{numeric:true})
@@ -843,7 +849,7 @@ $("file").addEventListener("change",async e=>{
 
 $("search").placeholder="番号・名前・ブランドなどで検索";
 
-["search","setFilter","rarityFilter","haveFilter"]
+["search","setFilter","rarityFilter","haveFilter","categoryFilter" ]
 
 .forEach(id=>{
 
