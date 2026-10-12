@@ -297,7 +297,10 @@ async function render(){
       </div>
 
       <button class="edit" onclick="editCard('${encodeURIComponent(c.id)}')">編集</button>
-
+      <button class="edit" style="color:#e04479"
+  onclick="deleteCard('${encodeURIComponent(c.id)}')">
+  🗑️ カードを削除
+</button>
       <div class="photo-actions">
 
         <button onclick="choosePhoto('${encodeURIComponent(c.id)}')">📷 写真登録</button>
@@ -385,7 +388,29 @@ function change(id,d){
   }
 
 }
+async function deleteCard(id){
+  const cardId = decodeURIComponent(id);
+  const card = cards.find(c => c.id === cardId);
 
+  if (!card) return;
+
+  const ok = confirm(
+    `「${card.name || card.id}」を削除しますか？\n写真や所持数の情報も削除されます。`
+  );
+
+  if (!ok) return;
+
+  try {
+    await deletePhoto(cardId);
+  } catch (e) {
+    alert("写真の削除に失敗しました。もう一度試してください。");
+    return;
+  }
+
+  cards = cards.filter(c => c.id !== cardId);
+  persist();
+}
+  
 function openModal(c,isNew=false){
 
   editing=isNew?null:c.id;
